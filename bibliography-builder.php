@@ -832,6 +832,11 @@ function bibliography_builder_register_a11y_checks( $registry ) {
 		return;
 	}
 
+	$heading_missing_message = __(
+		'Bibliography block has no heading. Screen reader users may not find this section.',
+		'borges-bibliography-builder'
+	);
+
 	$registry->register_check(
 		'bibliography-builder/bibliography',
 		'empty_bibliography',
@@ -848,11 +853,8 @@ function bibliography_builder_register_a11y_checks( $registry ) {
 		'bibliography-builder/bibliography',
 		'heading_missing',
 		array(
-			'error_msg'   => '',
-			'warning_msg' => __(
-				'Bibliography block has no heading. Screen reader users may not find this section.',
-				'borges-bibliography-builder'
-			),
+			'error_msg'   => $heading_missing_message,
+			'warning_msg' => $heading_missing_message,
 			'description' => __(
 				'Add a heading in block settings so the bibliography is announced as a document section.',
 				'borges-bibliography-builder'
@@ -893,4 +895,4 @@ function bibliography_builder_enqueue_a11y_validation() {
 		true
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'bibliography_builder_enqueue_a11y_validation' );
+add_action( 'enqueue_block_editor_assets', 'bibliography_builder_enqueue_a11y_validation', 20 );
