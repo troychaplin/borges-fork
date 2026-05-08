@@ -200,6 +200,7 @@ export default function Edit({ attributes, setAttributes }) {
 		citationStyle,
 		citationsRef,
 		clearNotice,
+		headingText,
 		queueFocus,
 		setAttributes,
 	});

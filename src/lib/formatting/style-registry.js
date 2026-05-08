@@ -160,6 +160,8 @@ export function getHeadingPlaceholder(styleKey = DEFAULT_CITATION_STYLE) {
 	return getStyleDefinition(styleKey).headingPlaceholder || 'Bibliography';
 }
 
+export const getDefaultHeadingText = getHeadingPlaceholder;
+
 /**
  * Get selectable styles for the inspector dropdown.
  *

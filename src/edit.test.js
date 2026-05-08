@@ -437,6 +437,21 @@ jest.mock('./lib/formatting', () => ({
 
 		return placeholders[styleKey] || 'Bibliography';
 	}),
+	getDefaultHeadingText: jest.fn((styleKey = 'chicago-notes-bibliography') => {
+		const placeholders = {
+			'chicago-notes-bibliography': 'Bibliography',
+			'chicago-author-date': 'References',
+			'apa-7': 'References',
+			'mla-9': 'Works Cited',
+			harvard: 'References',
+			ieee: 'References',
+			vancouver: 'References',
+			oscola: 'Bibliography',
+			abnt: 'Referências',
+		};
+
+		return placeholders[styleKey] || 'Bibliography';
+	}),
 	getListSemantics: jest.fn((styleKey) =>
 		['ieee', 'vancouver'].includes(styleKey) ? 'ol' : 'ul'
 	),

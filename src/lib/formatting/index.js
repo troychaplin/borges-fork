@@ -1,6 +1,7 @@
 export {
 	DEFAULT_CITATION_STYLE,
 	STYLE_DEFINITIONS,
+	getDefaultHeadingText,
 	getHeadingPlaceholder,
 	getStyleDefinition,
 	getListSemantics,
