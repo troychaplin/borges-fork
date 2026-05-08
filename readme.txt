@@ -109,7 +109,7 @@ This plugin connects to the **CrossRef REST API** (https://api.crossref.org/) wh
 
 = 1.2.0 =
 * Add BibLaTeX export from the editor exports panel.
-* Add PMID input resolution through the NCBI Literature Citation Export API.
+* Add PMID input resolution through an authenticated WordPress REST proxy to the NCBI Literature Citation Export API.
 * Add manual reordering controls for numeric citation styles, including keyboard Alt+Arrow movement.
 * Reformat the full bibliography after citation mutations so cached display text, sort order, and metadata stay aligned.
 * Improve sort parity with style-family dispatch, author-date tie-breakers, and JS/PHP coordination fixtures.

@@ -11,8 +11,10 @@ jest.mock('@citation-js/plugin-bibtex', () =>
 jest.mock('./formatting/csl', () =>
 	require('../__test-utils__/citation-js-mocks').stubFormattingFactory()
 );
+jest.mock('@wordpress/api-fetch', () => jest.fn());
 
 import { Cite } from '@citation-js/core';
+import apiFetch from '@wordpress/api-fetch';
 import { parsePastedInput, validateAndSanitizeCsl } from './parser';
 import { formatBibliographyEntries } from './formatting/csl';
 
@@ -161,6 +163,7 @@ describe('parsePastedInput', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		apiFetch.mockReset();
 		originalCrypto = global.crypto;
 		Object.defineProperty(global, 'crypto', {
 			configurable: true,
@@ -1158,22 +1161,16 @@ describe('PMID input resolution', () => {
 		});
 	});
 
-	it('uses window.fetch for PMID resolution when no fetch override is supplied', async () => {
-		const originalFetch = window.fetch;
-		const fetchFn = makeFetchFn();
-		window.fetch = fetchFn;
+	it('uses the WordPress REST proxy for PMID resolution by default', async () => {
+		apiFetch.mockResolvedValue(SAMPLE_CSL);
 
-		try {
-			const result = await parsePastedInput('PMID:36658352', 'apa');
+		const result = await parsePastedInput('PMID:36658352', 'apa');
 
-			expect(fetchFn).toHaveBeenCalledWith(
-				'https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=csl&id=36658352'
-			);
-			expect(result.entries).toHaveLength(1);
-			expect(result.errors).toHaveLength(0);
-		} finally {
-			window.fetch = originalFetch;
-		}
+		expect(apiFetch).toHaveBeenCalledWith({
+			path: '/bibliography/v1/pmid/36658352',
+		});
+		expect(result.entries).toHaveLength(1);
+		expect(result.errors).toHaveLength(0);
 	});
 
 	it('returns an error when NCBI returns a non-OK status', async () => {
@@ -1189,19 +1186,14 @@ describe('PMID input resolution', () => {
 	});
 
 	it('returns a PMID error when the Fetch API is unavailable', async () => {
-		const originalFetch = window.fetch;
-		delete window.fetch;
+		apiFetch.mockRejectedValue(new Error('WordPress API unavailable'));
 
-		try {
-			const result = await parsePastedInput('PMID:36658352', 'apa');
+		const result = await parsePastedInput('PMID:36658352', 'apa');
 
-			expect(result.entries).toHaveLength(0);
-			expect(result.errors).toEqual([
-				"Couldn't resolve the PMID. Check the number and try again.",
-			]);
-		} finally {
-			window.fetch = originalFetch;
-		}
+		expect(result.entries).toHaveLength(0);
+		expect(result.errors).toEqual([
+			"Couldn't resolve the PMID. Check the number and try again.",
+		]);
 	});
 
 	it('does not call Cite.async for PMID inputs', async () => {

@@ -26,6 +26,7 @@ No changes yet.
 
 ### Fixed
 
+- PMID resolution now uses an authenticated WordPress REST proxy so PubMed imports work in browsers despite NCBI's missing CORS headers.
 - Saved citation URL links and block toolbar controls now expose clearer accessible names.
 - Playwright accessibility and Playground smoke tests are more deterministic on GitHub Actions by selecting the block explicitly and serializing tests that share one Playground server.
 
