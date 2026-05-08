@@ -554,6 +554,23 @@ function bibliography_builder_rest_format_permissions_check() {
 }
 
 /**
+ * Permission callback for editor-only PMID resolver requests.
+ *
+ * @return true|WP_Error
+ */
+function bibliography_builder_rest_pmid_permissions_check() {
+	if ( current_user_can( 'edit_posts' ) ) {
+		return true;
+	}
+
+	return new WP_Error(
+		'bibliography_builder_pmid_forbidden',
+		__( 'Sorry, you are not allowed to resolve PubMed citations.', 'borges-bibliography-builder' ),
+		array( 'status' => 403 )
+	);
+}
+
+/**
  * Read JSON/body params from a REST request.
  *
  * @param WP_REST_Request $request REST request.
@@ -680,10 +697,21 @@ function bibliography_builder_rest_resolve_pmid( WP_REST_Request $request ) {
 	$status = (int) wp_remote_retrieve_response_code( $response );
 
 	if ( $status < 200 || $status >= 300 ) {
+		if ( 404 === $status ) {
+			return new WP_Error(
+				'bibliography_builder_pmid_not_found',
+				__( 'The PubMed ID could not be resolved.', 'borges-bibliography-builder' ),
+				array( 'status' => 404 )
+			);
+		}
+
 		return new WP_Error(
-			'bibliography_builder_pmid_not_found',
-			__( 'The PubMed ID could not be resolved.', 'borges-bibliography-builder' ),
-			array( 'status' => 404 === $status ? 404 : 502 )
+			'bibliography_builder_pmid_upstream_error',
+			__( 'The PubMed citation service returned an error.', 'borges-bibliography-builder' ),
+			array(
+				'status'          => 502,
+				'upstream_status' => $status,
+			)
 		);
 	}
 
@@ -779,7 +807,7 @@ function bibliography_builder_register_rest_routes() {
 		array(
 			'methods'             => WP_REST_Server::READABLE,
 			'callback'            => 'bibliography_builder_rest_resolve_pmid',
-			'permission_callback' => 'bibliography_builder_rest_format_permissions_check',
+			'permission_callback' => 'bibliography_builder_rest_pmid_permissions_check',
 			'args'                => array(
 				'pmid' => array(
 					'description'       => __( 'PubMed ID to resolve to CSL-JSON.', 'borges-bibliography-builder' ),

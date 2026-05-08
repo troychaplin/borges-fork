@@ -58,6 +58,7 @@ final class RestEndpointsTest extends TestCase {
 		$this->assertSame( '/pmid/(?P<pmid>\d{1,8})', $routes[1]['route'] );
 		$this->assertSame( '/posts/(?P<post_id>\d+)/bibliographies', $routes[2]['route'] );
 		$this->assertSame( '/posts/(?P<post_id>\d+)/bibliographies/(?P<index>\d+)', $routes[3]['route'] );
+		$this->assertSame( 'bibliography_builder_rest_pmid_permissions_check', $routes[1]['args']['permission_callback'] );
 
 		$pmid_arg = $routes[1]['args']['args']['pmid'];
 		$this->assertSame( '26673779', $pmid_arg['sanitize_callback']( 'PMID: 26-673779' ) );
@@ -153,15 +154,16 @@ final class RestEndpointsTest extends TestCase {
 	}
 
 	public function test_pmid_endpoint_requires_editor_capability(): void {
-		$forbidden = bibliography_builder_rest_format_permissions_check();
+		$forbidden = bibliography_builder_rest_pmid_permissions_check();
 
 		$this->assertInstanceOf( WP_Error::class, $forbidden );
+		$this->assertSame( 'bibliography_builder_pmid_forbidden', $forbidden->get_error_code() );
 		$this->assertSame( 403, $forbidden->get_error_data()['status'] );
 
 		bibliography_builder_test_grant_cap( 7, 'edit_posts', 0 );
 		bibliography_builder_test_set_current_user( 7 );
 
-		$this->assertTrue( bibliography_builder_rest_format_permissions_check() );
+		$this->assertTrue( bibliography_builder_rest_pmid_permissions_check() );
 	}
 
 	public function test_pmid_endpoint_returns_csl_json_from_ncbi(): void {

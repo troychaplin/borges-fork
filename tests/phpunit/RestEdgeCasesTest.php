@@ -162,8 +162,9 @@ final class RestEdgeCasesTest extends TestCase {
 		$result = bibliography_builder_rest_resolve_pmid( $request );
 
 		$this->assertInstanceOf( WP_Error::class, $result );
-		$this->assertSame( 'bibliography_builder_pmid_not_found', $result->get_error_code() );
+		$this->assertSame( 'bibliography_builder_pmid_upstream_error', $result->get_error_code() );
 		$this->assertSame( 502, $result->get_error_data()['status'] );
+		$this->assertSame( 500, $result->get_error_data()['upstream_status'] );
 	}
 
 	public function test_resolve_pmid_returns_502_for_invalid_upstream_json(): void {

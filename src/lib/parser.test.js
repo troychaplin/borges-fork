@@ -1185,7 +1185,7 @@ describe('PMID input resolution', () => {
 		expect(result.errors[0]).toMatch(/PMID/i);
 	});
 
-	it('returns a PMID error when the Fetch API is unavailable', async () => {
+	it('returns a PMID error when the WordPress REST transport fails', async () => {
 		apiFetch.mockRejectedValue(new Error('WordPress API unavailable'));
 
 		const result = await parsePastedInput('PMID:26673779', 'apa');
