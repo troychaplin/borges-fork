@@ -197,7 +197,24 @@ final class RestEndpointsTest extends TestCase {
 		bibliography_builder_test_grant_cap( 7, 'edit_posts', 0 );
 		bibliography_builder_test_set_current_user( 7 );
 
-		foreach ( array_keys( bibliography_builder_get_formatter_style_definitions() ) as $style_key ) {
+		$style_keys = array_keys( bibliography_builder_get_formatter_style_definitions() );
+
+		$this->assertSame(
+			array(
+				'chicago-notes-bibliography',
+				'chicago-author-date',
+				'apa-7',
+				'mla-9',
+				'harvard',
+				'ieee',
+				'vancouver',
+				'oscola',
+				'abnt',
+			),
+			$style_keys
+		);
+
+		foreach ( $style_keys as $style_key ) {
 			$request = new WP_REST_Request( 'POST', '/bibliography/v1/format' );
 			$request->set_body_params(
 				array(
