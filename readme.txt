@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/paypalme/DanKnauss
 Tags: bibliography, citation, doi, bibtex, academic
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -133,6 +133,15 @@ PubMed/PMID input connects through the plugin's authenticated WordPress REST pro
 * NLM Web Policies: https://www.nlm.nih.gov/web_policies.html
 
 == Changelog ==
+
+= 1.3.0 =
+* Enforce an explicit 50-citation total cap per bibliography block with inline editor warnings, replacing the silent 51-entry formatter cliff.
+* Guard all async editor mutation flows (paste/import, manual add, delete, style switch, structured edit) against stale results from superseded in-flight format requests.
+* Remove redundant formatter call in the manual-entry add path; the merged bibliography is now formatted once instead of twice.
+* Prune non-runtime vendor documentation and images from the release zip and exclude composer.lock, reducing release package weight.
+* Cache successful PMID proxy responses and deduplicate pending DOI resolution requests to reduce avoidable network traffic.
+* Refactor editor side-effects into focused hooks: useCitationImportActions, useManualCitationActions, and useBibliographyExportActions.
+* Extract PHP PMID resolver, cache, and permission logic into includes/pmid.php.
 
 = 1.2.0 =
 * Add BibLaTeX export from the editor exports panel.
