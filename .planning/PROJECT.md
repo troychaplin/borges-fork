@@ -16,8 +16,9 @@ backed by CSL-JSON.
 
 ## Current focus
 
--   Phase 2 performance/stability remediation is implemented and in final
-    stabilization/review before commit
+-   Post-launch GSD Phase 2 (performance/stability remediation) is committed
+    (`3d5d3de`, `539b6b3`); next track is the post-Phase 2 feature backlog,
+    starting with frontend Cite/Export affordances
 -   The hidden 51-entry formatter cliff is now replaced by an explicit, tested
     50-total-citation policy for 1.x
 -   Maintain CSL-JSON as the canonical citation model

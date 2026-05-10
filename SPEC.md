@@ -719,7 +719,13 @@ into the rendering pipeline.
     bibliographies have authoritative formatter benchmarks and UX coverage.
     Editor add/manual/style-change paths must not silently fall back because the
     full-bibliography formatter endpoint rejected an undocumented over-limit
-    request.
+    request. Three options remain open for a future release, documented in
+    `docs/planning/performance-stability-remediation-plan.md` (REQ-C1 scope):
+    (1) raise the hard cap with benchmark evidence, (2) add a larger soft cap
+    with explicit editor warnings, or (3) keep 50 as the clean-UX target and
+    introduce batched/streaming formatting for larger lists. Any revision must
+    be preceded by authoritative cold/warm latency measurements at 75, 100,
+    150, and 200 entries across all supported style families.
 -   **DOI resolution throttling:** queue DOI lookups and process them
     sequentially or in small batches (e.g., 3 concurrent requests). This
     prevents browser tab exhaustion and respects CrossRef's rate limits.

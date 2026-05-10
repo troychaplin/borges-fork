@@ -2,8 +2,10 @@
 
 ## Current Focus
 
-1. Phase 2 performance/stability remediation is implemented and stabilized;
-   final verification is complete; the next action is review and commit.
+1. Post-launch GSD Phase 2 (performance/stability remediation) is committed
+   in `3d5d3de` (stabilize bibliography formatter workflows) and `539b6b3`
+   (address stabilization review notes). The working tree is clean and HEAD
+   is 9 commits ahead of the `v1.2.0` tag.
 2. The final narrow maintainability slice extracted manual-entry
    state/mutation behavior from `edit.js` without changing UI markup or moving
    the shared async-operation guard out of the editor shell.
@@ -12,12 +14,12 @@
    full-list formatted.
 4. Track refreshed build footprint from the benchmark report while maintaining
    frontend zero-JS for saved output.
-5. Resume frontend Cite/Export, writable API/Abilities, and translation
-   expansion after Phase 2 review/commit.
+5. Decide whether to cut a fresh release (recommended `1.3.0`) before resuming
+   frontend Cite/Export, writable API/Abilities, and translation expansion.
 
 ## Current Priority Order
 
-1. Performance and stability remediation — **Phase 2 implemented; review/commit pending**
+1. Performance and stability remediation — **Phase 2 committed (`3d5d3de`, `539b6b3`)**
     - The former top risk, the hidden 51-entry formatter cliff, is now addressed
       by an explicit 50-total-citation policy and editor guards.
     - Completed: conservative 50-total-citation policy, fallback cache
@@ -29,9 +31,8 @@
       footprint reporting, and the final maintainability slices for
       paste/import, manual entry, clipboard/export, PMID resolver/caching, and
       free-text author parsing.
-    - Remaining Phase 2 sequence: review diff, commit.
-      Optional deeper splits are follow-up only unless review finds a concrete
-      blocker.
+    - Optional deeper splits (delete/list-mutation, formatter/REST helpers,
+      free-text-parser by citation type) remain follow-up only.
 2. CI and runtime compatibility hygiene
     - keep `main`, release assets, and WordPress.org SVN output aligned
     - monitor the Apache/Nginx, PHP 7.4-8.4/8.5-adjacent, WordPress 6.4-latest,
@@ -171,14 +172,15 @@ Recent work completed or in final verification includes:
 
 ## Active Concerns
 
--   **Phase 2 review risk** — the 50-citation limit, cache correctness, DOI/PMID
-    network hardening, formatter-cache guardrails, measured optimization
-    boundaries, and maintainability splits have implementation coverage.
-    Remaining risk is primarily diff size and ensuring no behavior changed.
--   **Performance plan vs. implementation** — the remediation plan is now
-    accurate and mirrored into GSD Phase 2; correctness, cache hardening,
-    measured optimization, and the scoped maintainability items are implemented
-    in the working tree.
+-   **Release decision** — HEAD is 9 commits ahead of `v1.2.0`. The
+    user-visible Phase 2 changes (explicit 50-citation total cap, async stale
+    protection, manual-entry single-format path, smaller release zip) warrant
+    a `1.3.0` minor bump. Alternatively, a `1.2.1` patch is defensible if
+    framing the 50-cap as "fix silent 51-cliff failure."
+-   **Performance plan vs. implementation** — the remediation plan and GSD
+    Phase 2 are now consistent with what is in the committed tree;
+    correctness, cache hardening, measured optimization, and the scoped
+    maintainability items are landed.
 -   **WordPress.org launch** — `1.0.0` is live on WordPress.org. Next
     operational step is post-launch polish and hotfix readiness while keeping
     the GitHub `v1.0.0` release asset and WordPress.org package aligned.
@@ -239,31 +241,33 @@ Recent work completed or in final verification includes:
 
 ## Roadmap Alignment
 
-**Phase 2 performance/stability remediation is implemented and stabilized.**
+**Post-launch GSD Phase 2 (performance/stability remediation) is committed.**
 The hidden formatter cliff, cache correctness, manual-entry double formatting,
 async stale-result exposure, benchmark ambiguity, release-package dead weight,
 PMID/DOI network fragility, conservative formatter caching, and the scoped
-maintainability splits are now represented in the working tree and GSD plan.
+maintainability splits all landed in `3d5d3de` and `539b6b3`.
 
 Current next-task sequence:
 
-1. **Review and commit** — final JS/PHP/build/release/benchmark gates
-   are green; inspect the large diff and commit Phase 2.
+1. **Cut release `1.3.0`** — bump version, update changelog, tag, and let
+   the GitHub release deploy to WordPress.org SVN.
 2. **Optional deeper splits only if justified** — delete/list mutation,
    formatter/REST route helpers, and citation-type parser modules are follow-up
    candidates, not Phase 2 blockers.
-3. **Resume feature backlog after commit** — frontend Cite/Export affordances,
+3. **Resume feature backlog after release** — frontend Cite/Export affordances,
    writable REST/Abilities design, and translation expansion.
 4. **Keep operational hygiene active** — CI/runtime matrix, release package,
    WordPress.org assets, and citeproc-php compatibility monitoring.
 
-Run `/gsd:progress` after the Phase 2 commit to choose the next feature or
+Run `/gsd:progress` after the release tag to choose the next feature or
 operational track.
 
 ## Accumulated Context
 
 ### Roadmap Evolution
 
--   Phase 1 added: Post-launch cleanup and documentation polish
--   Phase 2 added: Performance and stability remediation, led by the hidden
-    51-entry formatter cliff.
+-   Post-launch GSD Phase 1 added: post-launch cleanup and documentation polish
+    (completed)
+-   Post-launch GSD Phase 2 added: performance and stability remediation, led
+    by the hidden 51-entry formatter cliff (completed, committed in `3d5d3de`
+    and `539b6b3`)
