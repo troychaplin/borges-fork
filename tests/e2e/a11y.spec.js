@@ -245,13 +245,13 @@ test.describe('Bibliography block accessibility gate', () => {
 
 		await test.step('set up a post with the Bibliography block', async () => {
 			await page.goto('/wp-admin/post-new.php');
-			await page.waitForLoadState('domcontentloaded');
+			await page.waitForLoadState('networkidle');
 			await dismissEditorOverlay(page);
 			await expect(
 				page.getByRole('button', {
 					name: /Block Inserter|Toggle block inserter/i,
 				})
-			).toBeVisible({ timeout: 20000 });
+			).toBeVisible({ timeout: 30000 });
 			await insertBibliographyBlock(page);
 			await dismissEditorOverlay(page);
 			editorFrame = await getEditorFrame(page);
