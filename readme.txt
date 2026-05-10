@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/paypalme/DanKnauss
 Tags: bibliography, citation, doi, bibtex, academic
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,15 +29,13 @@ The **Borges Bibliography Builder** transforms pasted DOI(s), PubMed/PMID record
 
 **Translation-ready.** Plugin interface strings use the `borges-bibliography-builder` text domain, and official WordPress.org language packs are generated as community translations are approved on translate.wordpress.org.
 
-= What's new in 1.3.0 =
+= What's new in 1.3.1 =
 
-* **Explicit 50-citation cap** — bibliographies now show an inline editor warning as entries approach the 50-entry limit, replacing a silent formatter failure at 51 entries.
-* **Async stale-result protection** — all editor mutation flows (paste, manual add, delete, style switch, and structured edit) now discard results from superseded in-flight format requests.
-* **Smaller release package** — non-runtime vendor documentation and images are pruned from the zip, reducing download weight.
-* **Network efficiency** — successful PMID proxy responses are cached and concurrent DOI resolution requests are deduplicated to reduce avoidable network traffic.
+* **Bibliography cap raised to 200** — the per-bibliography limit grows from 50 to 200 citations. A dismissible editor notice appears when a bibliography has between 100 and 199 entries to flag potential slowness on shared hosting. The 50-entry per-paste limit is unchanged.
 
 = Earlier release highlights =
 
+* **1.3.0** — Explicit 50-citation cap with editor warnings, async stale-result protection across all editor flows, smaller release package, and PMID/DOI network efficiency improvements.
 * **1.2.0** — PubMed/PMID import through an authenticated REST proxy, BibLaTeX export, manual reordering for IEEE and Vancouver styles, and full-bibliography reformat parity across all nine styles.
 * **1.1.x** — Optional Block Accessibility Checks integration and restored visible keyboard focus on editor row actions.
 
@@ -134,6 +132,9 @@ PubMed/PMID input connects through the plugin's authenticated WordPress REST pro
 * NLM Web Policies: https://www.nlm.nih.gov/web_policies.html
 
 == Changelog ==
+
+= 1.3.1 =
+* Raise per-bibliography hard cap from 50 to 200 citations. Bibliographies between 100 and 199 citations now show a dismissible editor notice warning about potential formatting slowness on shared hosting. The per-paste limit (50 entries) is unchanged.
 
 = 1.3.0 =
 * Enforce an explicit 50-citation total cap per bibliography block with inline editor warnings, replacing the silent 51-entry formatter cliff.

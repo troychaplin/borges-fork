@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+No changes yet.
+
+## [1.3.1] - 2026-05-10
+
 ### Added
 
 - Bibliographies between 100 and 199 citations now show a dismissible editor notice warning that formatting may be slower on shared hosting.
