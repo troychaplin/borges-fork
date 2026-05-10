@@ -3,7 +3,7 @@
  * Plugin Name:       Borges Bibliography Builder
  * Plugin URI:        https://github.com/dknauss/borges-bibliography-builder/
  * Description:       Paste a DOI or BibTeX entry to build a formatted, auto-sorted bibliography in any style.
- * Version:           1.2.0
+ * Version:           1.3.1
  * Requires at least: 6.4
  * Tested up to:      7.0
  * Requires PHP:      7.4
@@ -306,12 +306,18 @@ function bibliography_builder_ensure_formatter_available() {
 /**
  * JSON-encode data using WordPress when available.
  *
- * @param mixed $data Data to encode.
+ * @param mixed $data  Data to encode.
+ * @param int   $flags Optional encoding flags.
+ * @param int   $depth Optional maximum depth.
  * @return string|false
  */
-function bibliography_builder_json_encode( $data ) {
-	// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Used only when WordPress is unavailable in isolated tests.
-	return function_exists( 'wp_json_encode' ) ? wp_json_encode( $data ) : json_encode( $data );
+function bibliography_builder_json_encode( $data, $flags = 0, $depth = 512 ) {
+	if ( function_exists( 'wp_json_encode' ) ) {
+		return wp_json_encode( $data, $flags, $depth );
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Test fallback when WP is absent.
+	return json_encode( $data, $flags, $depth );
 }
 
 /**
@@ -433,7 +439,14 @@ function bibliography_builder_get_formatter_cache_key( $csl_items, $style_key, $
 	);
 	$encoded = bibliography_builder_json_encode( $payload );
 
-	return 'format_' . md5( is_string( $encoded ) ? $encoded : serialize( $payload ) );
+	if ( ! is_string( $encoded ) ) {
+		$encoded = bibliography_builder_json_encode(
+			$payload,
+			JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR
+		);
+	}
+
+	return 'format_' . md5( is_string( $encoded ) ? $encoded : '' );
 }
 
 /**
@@ -703,9 +716,16 @@ function bibliography_builder_get_cached_pmid_result( $pmid ) {
 	}
 
 	if ( isset( $cached['value']['type'] ) && 'error' === $cached['value']['type'] ) {
+		$error_code = isset( $cached['value']['code'] )
+			? (string) $cached['value']['code']
+			: 'bibliography_builder_pmid_upstream_error';
+		$error_message = isset( $cached['value']['message'] )
+			? (string) $cached['value']['message']
+			: __( 'The PubMed citation service returned an error.', 'borges-bibliography-builder' );
+
 		return bibliography_builder_pmid_error(
-			isset( $cached['value']['code'] ) ? (string) $cached['value']['code'] : 'bibliography_builder_pmid_upstream_error',
-			isset( $cached['value']['message'] ) ? (string) $cached['value']['message'] : __( 'The PubMed citation service returned an error.', 'borges-bibliography-builder' ),
+			$error_code,
+			$error_message,
 			isset( $cached['value']['data'] ) && is_array( $cached['value']['data'] )
 				? $cached['value']['data']
 				: array( 'status' => 502 )

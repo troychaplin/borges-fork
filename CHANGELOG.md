@@ -19,6 +19,24 @@ No changes yet.
 
 - Per-bibliography hard cap raised from 50 to 200 citations. The 50-entry per-paste limit is unchanged.
 
+## [1.3.0] - 2026-05-09
+
+### Added
+
+- Explicit 50-citation total cap per bibliography block with inline editor warnings, replacing the silent 51-entry formatter cliff.
+- Guard all async editor mutation flows (paste/import, manual add, delete, style switch, structured edit) against stale results from superseded in-flight format requests.
+- Cache successful PMID proxy responses and deduplicate pending DOI resolution requests to reduce avoidable network traffic.
+
+### Changed
+
+- Removed redundant formatter call in the manual-entry add path; the merged bibliography is now formatted once instead of twice.
+- Pruned non-runtime vendor documentation and images from the release zip and excluded `composer.lock`, reducing release package weight.
+
+### Internal
+
+- Refactored editor side-effects into focused hooks: `useCitationImportActions`, `useManualCitationActions`, and `useBibliographyExportActions`.
+- Extracted PHP PMID resolver, cache, and permission logic into `includes/pmid.php`.
+
 ## [1.2.0] - 2026-05-08
 
 ### Added

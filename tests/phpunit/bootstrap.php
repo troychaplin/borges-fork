@@ -187,8 +187,8 @@ function wp_strip_all_tags( $text ) {
 	return strip_tags( (string) $text );
 }
 
-function wp_json_encode( $data ) {
-	return json_encode( $data );
+function wp_json_encode( $data, $flags = 0, $depth = 512 ) {
+	return json_encode( $data, $flags, $depth );
 }
 
 function add_query_arg( $args, $url ) {
