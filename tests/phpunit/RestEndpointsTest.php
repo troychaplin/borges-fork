@@ -171,7 +171,7 @@ final class RestEndpointsTest extends TestCase {
 		wp_cache_set(
 			$cache_key,
 			array( 'Cached object-cache entry' ),
-			BIBLIOGRAPHY_BUILDER_FORMAT_CACHE_GROUP,
+			'bibliography_builder_formatter',
 			BIBLIOGRAPHY_BUILDER_FORMAT_CACHE_TTL
 		);
 
@@ -219,7 +219,7 @@ final class RestEndpointsTest extends TestCase {
 
 		$response = bibliography_builder_rest_format_citations( $request );
 		$cache_key = bibliography_builder_get_formatter_cache_key( $csl_items, $style_key, $style );
-		$cached    = wp_cache_get( $cache_key, BIBLIOGRAPHY_BUILDER_FORMAT_CACHE_GROUP );
+		$cached    = wp_cache_get( $cache_key, 'bibliography_builder_formatter' );
 
 		$this->assertInstanceOf( WP_REST_Response::class, $response );
 		$this->assertIsArray( $cached );
