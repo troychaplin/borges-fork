@@ -497,6 +497,41 @@ describe('parsePastedInput', () => {
 		]);
 	});
 
+	it('resolves DOI metadata through CrossRef when a fetch transport is available', async () => {
+		const fetchFn = jest.fn().mockResolvedValue({
+			ok: true,
+			json: async () => ({
+				type: 'journal-article',
+				title: 'Array programming with NumPy',
+				DOI: '10.1038/s41586-020-2649-2',
+				author: [
+					{
+						given: 'Charles R.',
+						family: 'Harris',
+					},
+				],
+			}),
+		});
+
+		const result = await parsePastedInput(
+			'10.1038/s41586-020-2649-2',
+			'apa-7',
+			{ fetchFn }
+		);
+
+		expect(fetchFn).toHaveBeenCalledWith(
+			'https://api.crossref.org/works/10.1038%2Fs41586-020-2649-2/transform/application/vnd.citationstyles.csl+json'
+		);
+		expect(Cite.async).not.toHaveBeenCalled();
+		expect(result.errors).toEqual([]);
+		expect(result.entries).toHaveLength(1);
+		expect(result.entries[0].csl).toMatchObject({
+			type: 'article-journal',
+			title: 'Array programming with NumPy',
+			DOI: '10.1038/s41586-020-2649-2',
+		});
+	});
+
 	it('reuses DOI metadata for duplicate DOI values within one paste', async () => {
 		Cite.async.mockResolvedValue({
 			get: () => [

@@ -22,6 +22,7 @@ const BIBTEX_REGEX = /@\w+\{/;
 const PMID_REGEX = /^PMID:\s*(\d{1,8})$/i;
 const NCBI_CSL_API =
 	'https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=csl&id=';
+const CROSSREF_CSL_API = 'https://api.crossref.org/works/';
 const PMID_REST_ENDPOINT = '/bibliography/v1/pmid/';
 const MAX_INPUT_SIZE = 1024 * 1024; // 1 MB
 const PARSE_CONCURRENCY = 4;
@@ -81,6 +82,22 @@ async function resolvePmidCsl(pmid, fetchFn) {
 	throw new Error('Fetch API unavailable for PMID resolution');
 }
 
+async function resolveDoiViaCrossRef(doi, fetchFn) {
+	const response = await fetchFn(
+		`${CROSSREF_CSL_API}${encodeURIComponent(
+			doi
+		)}/transform/application/vnd.citationstyles.csl+json`
+	);
+
+	if (!response.ok) {
+		throw new Error(
+			`CrossRef API returned ${response.status} for DOI ${doi}`
+		);
+	}
+
+	return normalizeCrossRefCsl(await response.json());
+}
+
 function normalizeDoiInput(value) {
 	return value
 		.trim()
@@ -96,6 +113,21 @@ export function normalizeDoiValueForLookup(value) {
 
 function cloneCslItems(cslItems) {
 	return cslItems.map((item) => JSON.parse(JSON.stringify(item)));
+}
+
+function normalizeCrossRefCsl(csl) {
+	const typeMap = {
+		'journal-article': 'article-journal',
+		'book-chapter': 'chapter',
+		'proceedings-article': 'paper-conference',
+		dissertation: 'thesis',
+		'posted-content': 'manuscript',
+	};
+
+	return {
+		...csl,
+		type: typeMap[csl.type] || csl.type,
+	};
 }
 
 function getCachedDoiMetadata(cacheKey) {
@@ -141,7 +173,7 @@ function enqueueDoiResolution(resolve) {
 	return queuedResolution;
 }
 
-async function resolveDoiCslItems(value) {
+async function resolveDoiCslItems(value, fetchFn) {
 	const cacheKey = normalizeDoiValueForLookup(value);
 	const cachedItems = getCachedDoiMetadata(cacheKey);
 
@@ -151,16 +183,21 @@ async function resolveDoiCslItems(value) {
 
 	if (!PENDING_DOI_RESOLUTIONS.has(cacheKey)) {
 		const normalizedDoi = normalizeDoiInput(value);
+		const doiFetchFn =
+			typeof fetchFn === 'function' ? fetchFn : getDefaultFetchFn();
 
 		PENDING_DOI_RESOLUTIONS.set(
 			cacheKey,
-			enqueueDoiResolution(() =>
-				Cite.async(normalizedDoi).then((cite) => {
-					const cslItems = cite.get({ type: 'json' });
-					setCachedDoiMetadata(cacheKey, cslItems);
-					return cslItems;
-				})
-			).finally(() => {
+			enqueueDoiResolution(async () => {
+				const cslItems =
+					typeof doiFetchFn === 'function'
+						? [await resolveDoiViaCrossRef(cacheKey, doiFetchFn)]
+						: await Cite.async(normalizedDoi).then((cite) =>
+								cite.get({ type: 'json' })
+						  );
+				setCachedDoiMetadata(cacheKey, cslItems);
+				return cslItems;
+			}).finally(() => {
 				PENDING_DOI_RESOLUTIONS.delete(cacheKey);
 			})
 		);
@@ -411,9 +448,9 @@ const PARSER_BACKENDS = {
 
 		return { cslItems: [csl] };
 	},
-	doi: async (value) => {
+	doi: async (value, { fetchFn } = {}) => {
 		return {
-			cslItems: await resolveDoiCslItems(value),
+			cslItems: await resolveDoiCslItems(value, fetchFn),
 		};
 	},
 	bibtex: async (value) => {
