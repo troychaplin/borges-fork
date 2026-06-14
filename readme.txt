@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/paypalme/DanKnauss
 Tags: bibliography, citation, doi, bibtex, academic
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -122,6 +122,12 @@ PubMed/PMID input connects through the plugin's authenticated WordPress REST pro
 * NLM Web Policies: https://www.nlm.nih.gov/web_policies.html
 
 == Changelog ==
+
+= 1.3.4 =
+* Refresh the translation template and 19 seed PO/MO locale pairs from current source strings.
+* Add i18n artifact validation to CI so POT, PO, MO, and public language-pack wording stay aligned.
+* Clarify that bundled seed language files are translator/import material and WordPress.org Languages remains canonical for official packs.
+* Update docs for the current maintenance state and archive historical planning notes out of active paths.
 
 = 1.3.3 =
 * Restore DOI imports in browser-based WordPress Playground by resolving DOI metadata through CrossRef's CORS-friendly CSL transform endpoint.
