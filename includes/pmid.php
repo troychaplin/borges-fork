@@ -5,6 +5,10 @@
  * @package BibliographyBuilder
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Build a bounded cache key for PMID resolver responses.
  *
