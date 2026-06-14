@@ -8,7 +8,7 @@ _Last reviewed: 2026-06-13._
    browser-based WordPress Playground by using CrossRef's CSL transform endpoint
    directly, serialized DOI requests, and added a PubMed sample to the demo
    starter content.
-2. `main` is currently seven commits ahead of `v1.3.3` with post-release
+2. `main` is currently nine commits ahead of `v1.3.3` with post-release
    test, documentation, planning, hygiene, and dev-dependency work:
    - `4fee7d2` Add Playground DOI import smoke test
    - `1654cee` Ignore local Claude worktrees
@@ -17,6 +17,8 @@ _Last reviewed: 2026-06-13._
    - `d372501` chore(deps): bump qs in the npm_and_yarn group across 1 directory
    - `8893b32` test(sort): add REQ-S4 coordination fixture cases and fix lint
    - `fbe09da` chore(deps-dev): bump shell-quote
+   - `4519dd4` Refresh planning state after dependency update
+   - `8002bed` chore(deps-dev): bump webpack-dev-server
 3. Keep the release artifact, WordPress.org SVN output, Playground blueprints,
    and docs aligned whenever DOI/PMID/BibTeX import behavior changes.
 4. Next feature track remains frontend Cite/Export affordances, unless a
@@ -55,6 +57,9 @@ _Last reviewed: 2026-06-13._
   PubMed/PMID, runtime matrix, and planning-state accuracy.
 - Dependabot PR #33 was merged, bumping `shell-quote` from 1.8.3 to 1.8.4 and
   clearing the critical `shell-quote` alert.
+- `webpack-dev-server` was bumped beyond the patched 5.2.4 threshold; the
+  remaining `uuid` and `showdown` alerts were dismissed in GitHub as tolerable
+  transitive development-dependency risk with comments.
 
 ## Active Concerns
 
@@ -64,11 +69,9 @@ _Last reviewed: 2026-06-13._
 - **Public pages:** Treat the live WordPress.org plugin page as canonical for
   version and language-pack availability. Avoid hard-coding official locale
   claims in planning docs.
-- **Dependabot alerts:** The critical `shell-quote` alert is resolved. Remaining
-  open alerts are medium-severity transitive dev dependencies (`uuid`,
-  `webpack-dev-server`, and `showdown`) that are not bundled in the
-  WordPress.org release ZIP or static plugin output. Re-evaluate if upstream
-  WordPress packages publish patched ranges.
+- **Dependabot alerts:** No open Dependabot alerts remain. Re-evaluate dismissed
+  `uuid` and `showdown` alerts if upstream WordPress packages publish patched
+  compatible ranges or Showdown publishes a patched release.
 - **Coverage:** The main remaining quality gap is broader browser/E2E coverage
   around paste/import behavior, especially external metadata resolution paths.
 
