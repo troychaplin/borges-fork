@@ -84,6 +84,6 @@
 		"@sentry/node": {
 			"minimatch": "^9.0.8"
 		},
-		"webpack-dev-server": "^5.2.3"
+		"webpack-dev-server": "^5.2.4"
 	}
 }
