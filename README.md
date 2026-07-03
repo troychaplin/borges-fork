@@ -22,7 +22,9 @@ Just write out your citations or paste DOIs, PubMed/PMID identifiers, and BibTeX
 
 ## Try it in WordPress Playground
 
-Install the public release from [WordPress.org](https://wordpress.org/plugins/borges-bibliography-builder/) or launch a disposable WordPress instance with the plugin preinstalled: [Try the Borges Bibliography Builder in WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/Borges/main/playground/blueprint.json). The GitHub-hosted demo Blueprint installs the latest GitHub Release ZIP through the WordPress Playground CORS proxy and explicitly requests PHP `intl` support because editor-time CSL formatting runs through the plugin's local PHP formatter. The WordPress.org Preview blueprint is separate; WordPress.org installs Borges automatically there, and the blueprint only seeds demo content and auxiliary plugin setup.
+Install the public release from [WordPress.org](https://wordpress.org/plugins/borges-bibliography-builder/) or launch a disposable WordPress instance with the plugin preinstalled: [Try the Borges Bibliography Builder in WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/Borges/main/playground/blueprint.json). 
+
+The GitHub-hosted demo Blueprint installs the latest GitHub Release ZIP through the WordPress Playground CORS proxy and explicitly requests PHP `intl` support because editor-time CSL formatting runs through the plugin's local PHP formatter. The WordPress.org Preview blueprint is separate; WordPress.org installs Borges automatically there, and the blueprint only seeds demo content and auxiliary plugin setup.
 
 ## Screenshots
 
