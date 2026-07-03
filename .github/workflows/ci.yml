@@ -222,3 +222,56 @@ jobs:
                   name: bibliography-release
                   path: output/release/borges-bibliography-builder.zip
                   if-no-files-found: error
+
+    # Publish the packaged main build to a rolling `main-preview` pre-release so
+    # WordPress Playground has a stable, CORS-reachable URL for the current main
+    # HEAD (git:directory is unavailable in live Playground). Isolated in its own
+    # job so the write-scoped token is never present during checkout/build/package
+    # (and never on pull_request or codex/** runs), gated behind the full required
+    # CI suite so the Main-build badge can't install a build from a run that later
+    # failed, and reuses the exact artifact those gates validated.
+    publish-main-preview:
+        name: Publish rolling main preview
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        needs:
+            - quality
+            - phpunit
+            - playwright-playground
+            - psalm
+            - package-release
+        permissions:
+            contents: write
+
+        steps:
+            - name: Download packaged plugin artifact
+              uses: actions/download-artifact@v6
+              with:
+                  name: bibliography-release
+                  path: output/release
+
+            # Guard against a slower older run overwriting `main-preview` with a
+            # stale ZIP. The tip re-check and the asset write live in ONE step so
+            # the check happens immediately before the upload (minimal TOCTOU
+            # window): if `main` has advanced past this commit, skip — the newer
+            # run publishes. Correct regardless of job-scheduling order, unlike
+            # job-level concurrency (which can cancel the newer run instead).
+            - name: Publish rolling main preview
+              # This job has no checkout, so gh cannot infer the repo from a local
+              # git remote; GH_REPO gives `gh release`/`gh api` their repo context.
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  GH_REPO: ${{ github.repository }}
+              run: |
+                  tip="$(gh api "repos/${{ github.repository }}/commits/main" --jq .sha)"
+                  if [ "$tip" != "${{ github.sha }}" ]; then
+                      echo "::notice::main advanced to ${tip}; skipping stale main-preview publish for ${{ github.sha }}"
+                      exit 0
+                  fi
+                  if ! gh release view main-preview >/dev/null 2>&1; then
+                      gh release create main-preview \
+                          --prerelease \
+                          --title "Main branch preview (rolling)" \
+                          --notes "Automated rolling build of the \`main\` branch, refreshed on every push. This is **not** a stable release — for production use install the latest tagged release or the WordPress.org listing."
+                  fi
+                  gh release upload main-preview output/release/borges-bibliography-builder.zip --clobber
