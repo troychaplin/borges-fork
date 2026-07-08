@@ -550,8 +550,9 @@ test.describe('Bibliography block accessibility gate', () => {
 				() =>
 					typeof window.wp !== 'undefined' &&
 					typeof window.wp.data !== 'undefined' &&
-					typeof window.wp.data.select('block-accessibility-checks') !==
-						'undefined'
+					typeof window.wp.data.select(
+						'block-accessibility-checks'
+					) !== 'undefined'
 			)
 			.catch(() => false);
 
