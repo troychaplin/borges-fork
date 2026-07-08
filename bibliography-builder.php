@@ -1810,8 +1810,8 @@ add_filter( 'rest_pre_serve_request', 'bibliography_builder_rest_pre_serve_reque
  * @param object $registry BAC check registry instance.
  * @since 1.1.0
  */
-function bibliography_builder_register_a11y_checks( $registry ) {
-	if ( ! is_object( $registry ) || ! method_exists( $registry, 'register_check' ) ) {
+function bibliography_builder_register_a11y_checks() {
+	if ( ! function_exists( 'ba11yc_register_block_check' ) ) {
 		return;
 	}
 
@@ -1820,30 +1820,80 @@ function bibliography_builder_register_a11y_checks( $registry ) {
 		'borges-bibliography-builder'
 	);
 
-	$registry->register_check(
+	\ba11yc_register_block_check(
 		'bibliography-builder/bibliography',
-		'empty_bibliography',
 		array(
-			'error_msg'   => __( 'Bibliography block contains no citations.', 'borges-bibliography-builder' ),
-			'warning_msg' => __( 'Bibliography block contains no citations.', 'borges-bibliography-builder' ),
-			'description' => __( 'Add at least one citation before publishing.', 'borges-bibliography-builder' ),
-			'type'        => 'error',
-			'category'    => 'accessibility',
+			'namespace'    => 'borges-bibliography-builder',
+			'name'         => 'empty_bibliography',
+			'error_msg'    => __( 'Bibliography block contains no citations.', 'borges-bibliography-builder' ),
+			'warning_msg'  => __( 'Bibliography block contains no citations.', 'borges-bibliography-builder' ),
+			'description'  => __( 'Add at least one citation before publishing.', 'borges-bibliography-builder' ),
+			'level'        => 'error',
+			'configurable' => true,
+			'category'     => 'accessibility',
 		)
 	);
 
-	$registry->register_check(
+	\ba11yc_register_block_check(
 		'bibliography-builder/bibliography',
-		'heading_missing',
 		array(
-			'error_msg'   => $heading_missing_message,
-			'warning_msg' => $heading_missing_message,
-			'description' => __(
+			'namespace'    => 'borges-bibliography-builder',
+			'name'         => 'heading_missing',
+			'error_msg'    => $heading_missing_message,
+			'warning_msg'  => $heading_missing_message,
+			'description'  => __(
 				'Add a heading in block settings so the bibliography is announced as a document section.',
 				'borges-bibliography-builder'
 			),
-			'type'        => 'warning',
-			'category'    => 'accessibility',
+			'level'        => 'warning',
+			'configurable' => true,
+			'category'     => 'accessibility',
+		)
+	);
+
+	\ba11yc_register_block_check(
+		'bibliography-builder/bibliography',
+		array(
+			'namespace'    => 'borges-bibliography-builder',
+			'name'         => 'raw_url_link_text',
+			'error_msg'    => __(
+				'One or more citations have a URL or DOI as the only identifier. A descriptive title helps screen reader users understand the link destination.',
+				'borges-bibliography-builder'
+			),
+			'warning_msg'  => __(
+				'One or more citations have a URL or DOI as the only identifier. A descriptive title helps screen reader users understand the link destination.',
+				'borges-bibliography-builder'
+			),
+			'description'  => __(
+				'Citations with a URL or DOI should have a descriptive title as link text.',
+				'borges-bibliography-builder'
+			),
+			'level'        => 'warning',
+			'configurable' => true,
+			'category'     => 'accessibility',
+		)
+	);
+
+	\ba11yc_register_block_check(
+		'bibliography-builder/bibliography',
+		array(
+			'namespace'    => 'borges-bibliography-builder',
+			'name'         => 'all_metadata_disabled',
+			'error_msg'    => __(
+				'All machine-readable metadata outputs (JSON-LD, COinS, CSL-JSON) are disabled. Enabling at least one improves citation-manager interoperability.',
+				'borges-bibliography-builder'
+			),
+			'warning_msg'  => __(
+				'All machine-readable metadata outputs (JSON-LD, COinS, CSL-JSON) are disabled. Enabling at least one improves citation-manager interoperability.',
+				'borges-bibliography-builder'
+			),
+			'description'  => __(
+				'Enable at least one metadata output (JSON-LD, COinS, or CSL-JSON) to improve citation-manager interoperability.',
+				'borges-bibliography-builder'
+			),
+			'level'        => 'warning',
+			'configurable' => true,
+			'category'     => 'accessibility',
 		)
 	);
 }
