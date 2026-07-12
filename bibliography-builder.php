@@ -1804,10 +1804,11 @@ add_filter( 'rest_pre_serve_request', 'bibliography_builder_rest_pre_serve_reque
  * active. If BAC is not present, this function is never called.
  *
  * Registered checks:
- *   - empty_bibliography (error)   — block has no citations.
- *   - heading_missing   (warning)  — headingText is blank; no visible heading.
+ *   - empty_bibliography (error) - block has no citations.
+ *   - heading_missing (warning) - citations exist with no visible heading.
+ *   - raw_url_link_text (warning) - citation link text is a raw URL/DOI.
+ *   - all_metadata_disabled (warning) - metadata outputs are disabled.
  *
- * @param object $registry BAC check registry instance.
  * @since 1.1.0
  */
 function bibliography_builder_register_a11y_checks() {
@@ -1815,7 +1816,15 @@ function bibliography_builder_register_a11y_checks() {
 		return;
 	}
 
-	$heading_missing_message = __(
+	$raw_url_link_text_message     = __(
+		'One or more citations use a URL or DOI as link text. Add a descriptive title for screen readers.',
+		'borges-bibliography-builder'
+	);
+	$all_metadata_disabled_message = __(
+		'All machine-readable metadata outputs are disabled. Enable JSON-LD, COinS, or CSL-JSON for interoperability.',
+		'borges-bibliography-builder'
+	);
+	$heading_missing_message       = __(
 		'Bibliography block has no heading. Screen reader users may not find this section.',
 		'borges-bibliography-builder'
 	);
@@ -1856,14 +1865,8 @@ function bibliography_builder_register_a11y_checks() {
 		array(
 			'namespace'    => 'borges-bibliography-builder',
 			'name'         => 'raw_url_link_text',
-			'error_msg'    => __(
-				'One or more citations have a URL or DOI as the only identifier. A descriptive title helps screen reader users understand the link destination.',
-				'borges-bibliography-builder'
-			),
-			'warning_msg'  => __(
-				'One or more citations have a URL or DOI as the only identifier. A descriptive title helps screen reader users understand the link destination.',
-				'borges-bibliography-builder'
-			),
+			'error_msg'    => $raw_url_link_text_message,
+			'warning_msg'  => $raw_url_link_text_message,
 			'description'  => __(
 				'Citations with a URL or DOI should have a descriptive title as link text.',
 				'borges-bibliography-builder'
@@ -1879,16 +1882,10 @@ function bibliography_builder_register_a11y_checks() {
 		array(
 			'namespace'    => 'borges-bibliography-builder',
 			'name'         => 'all_metadata_disabled',
-			'error_msg'    => __(
-				'All machine-readable metadata outputs (JSON-LD, COinS, CSL-JSON) are disabled. Enabling at least one improves citation-manager interoperability.',
-				'borges-bibliography-builder'
-			),
-			'warning_msg'  => __(
-				'All machine-readable metadata outputs (JSON-LD, COinS, CSL-JSON) are disabled. Enabling at least one improves citation-manager interoperability.',
-				'borges-bibliography-builder'
-			),
+			'error_msg'    => $all_metadata_disabled_message,
+			'warning_msg'  => $all_metadata_disabled_message,
 			'description'  => __(
-				'Enable at least one metadata output (JSON-LD, COinS, or CSL-JSON) to improve citation-manager interoperability.',
+				'Enable at least one metadata output to improve citation-manager interoperability.',
 				'borges-bibliography-builder'
 			),
 			'level'        => 'warning',
@@ -1897,7 +1894,7 @@ function bibliography_builder_register_a11y_checks() {
 		)
 	);
 }
-add_action( 'ba11yc_ready', 'bibliography_builder_register_a11y_checks' );
+add_action( 'ba11yc_ready', 'bibliography_builder_register_a11y_checks', 10, 0 );
 
 /**
  * Conditionally enqueue the BAC validation script in the block editor.

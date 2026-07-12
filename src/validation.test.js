@@ -67,31 +67,56 @@ describe('validateBibliographyBlock', () => {
 		it('passes when headingText is a non-empty string', () => {
 			expect(
 				validateBibliographyBlock(
-					{ headingText: 'References' },
+					{
+						citations: [{ csl: { title: 'Example' } }],
+						headingText: 'References',
+					},
 					'heading_missing'
 				)
 			).toBe(true);
 		});
 
-		it('fails when headingText is an empty string', () => {
+		it('passes when headingText is empty and the block has no citations', () => {
 			expect(
 				validateBibliographyBlock(
-					{ headingText: '' },
+					{ citations: [], headingText: '' },
+					'heading_missing'
+				)
+			).toBe(true);
+		});
+
+		it('passes when citations attribute is missing', () => {
+			expect(validateBibliographyBlock({}, 'heading_missing')).toBe(true);
+		});
+
+		it('fails when citations exist and headingText is an empty string', () => {
+			expect(
+				validateBibliographyBlock(
+					{
+						citations: [{ csl: { title: 'Example' } }],
+						headingText: '',
+					},
 					'heading_missing'
 				)
 			).toBe(false);
 		});
 
-		it('fails when headingText is missing', () => {
-			expect(validateBibliographyBlock({}, 'heading_missing')).toBe(
-				false
-			);
-		});
-
-		it('fails when headingText is whitespace-only', () => {
+		it('fails when citations exist and headingText is missing', () => {
 			expect(
 				validateBibliographyBlock(
-					{ headingText: '   ' },
+					{ citations: [{ csl: { title: 'Example' } }] },
+					'heading_missing'
+				)
+			).toBe(false);
+		});
+
+		it('fails when citations exist and headingText is whitespace-only', () => {
+			expect(
+				validateBibliographyBlock(
+					{
+						citations: [{ csl: { title: 'Example' } }],
+						headingText: '   ',
+					},
 					'heading_missing'
 				)
 			).toBe(false);

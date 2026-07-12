@@ -4,34 +4,16 @@ use PHPUnit\Framework\TestCase;
 
 final class A11yIntegrationTest extends TestCase {
 
-	/** Calls recorded by the stub ba11yc_register_block_check(). */
-	private array $registered_checks = array();
-
 	protected function setUp(): void {
 		parent::setUp();
 		bibliography_builder_test_reset_state();
-		$this->registered_checks = array();
 	}
 
 	// -------------------------------------------------------------------------
 	// PHP registration
 	// -------------------------------------------------------------------------
 
-	public function test_register_a11y_checks_is_noop_when_function_absent(): void {
-		// When ba11yc_register_block_check() is not defined the function must
-		// return without throwing.
-		if ( function_exists( 'ba11yc_register_block_check' ) ) {
-			$this->markTestSkipped( 'ba11yc_register_block_check is defined in this environment.' );
-		}
-
-		$this->assertNull( bibliography_builder_register_a11y_checks() );
-	}
-
 	public function test_register_a11y_checks_registers_all_four_checks(): void {
-		if ( ! function_exists( 'ba11yc_register_block_check' ) ) {
-			$this->markTestSkipped( 'ba11yc_register_block_check is not defined in this environment.' );
-		}
-
 		bibliography_builder_register_a11y_checks();
 
 		$calls = $GLOBALS['bibliography_builder_test_bac_register_calls'] ?? array();
@@ -46,10 +28,6 @@ final class A11yIntegrationTest extends TestCase {
 	}
 
 	public function test_register_a11y_checks_uses_correct_block_type(): void {
-		if ( ! function_exists( 'ba11yc_register_block_check' ) ) {
-			$this->markTestSkipped( 'ba11yc_register_block_check is not defined in this environment.' );
-		}
-
 		bibliography_builder_register_a11y_checks();
 
 		$calls = $GLOBALS['bibliography_builder_test_bac_register_calls'] ?? array();
@@ -60,10 +38,6 @@ final class A11yIntegrationTest extends TestCase {
 	}
 
 	public function test_register_a11y_checks_uses_v4_args_shape(): void {
-		if ( ! function_exists( 'ba11yc_register_block_check' ) ) {
-			$this->markTestSkipped( 'ba11yc_register_block_check is not defined in this environment.' );
-		}
-
 		bibliography_builder_register_a11y_checks();
 
 		$calls = $GLOBALS['bibliography_builder_test_bac_register_calls'] ?? array();
@@ -79,10 +53,6 @@ final class A11yIntegrationTest extends TestCase {
 	}
 
 	public function test_empty_bibliography_check_is_error(): void {
-		if ( ! function_exists( 'ba11yc_register_block_check' ) ) {
-			$this->markTestSkipped( 'ba11yc_register_block_check is not defined in this environment.' );
-		}
-
 		bibliography_builder_register_a11y_checks();
 
 		$calls = $GLOBALS['bibliography_builder_test_bac_register_calls'] ?? array();
@@ -92,10 +62,6 @@ final class A11yIntegrationTest extends TestCase {
 	}
 
 	public function test_heading_missing_check_is_warning(): void {
-		if ( ! function_exists( 'ba11yc_register_block_check' ) ) {
-			$this->markTestSkipped( 'ba11yc_register_block_check is not defined in this environment.' );
-		}
-
 		bibliography_builder_register_a11y_checks();
 
 		$calls = $GLOBALS['bibliography_builder_test_bac_register_calls'] ?? array();
@@ -104,6 +70,22 @@ final class A11yIntegrationTest extends TestCase {
 		$this->assertSame( 'warning', $check['args']['level'] );
 		$this->assertNotEmpty( $check['args']['error_msg'] );
 		$this->assertSame( $check['args']['error_msg'], $check['args']['warning_msg'] );
+	}
+
+	public function test_bac_ready_action_passes_no_arguments(): void {
+		$matching_actions = array_filter(
+			$GLOBALS['bibliography_builder_test_added_actions'],
+			static function ( $action ) {
+				return 'ba11yc_ready' === $action['hook_name']
+					&& 'bibliography_builder_register_a11y_checks' === $action['callback'];
+			}
+		);
+
+		$this->assertNotEmpty( $matching_actions );
+
+		$action = array_values( $matching_actions )[0];
+
+		$this->assertSame( 0, $action['accepted_args'] );
 	}
 
 	// -------------------------------------------------------------------------

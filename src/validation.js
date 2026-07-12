@@ -56,10 +56,13 @@ export function validateBibliographyBlock(attributes, checkName) {
 	}
 
 	if (checkName === 'heading_missing') {
-		return (
+		const hasCitations =
+			Array.isArray(attributes.citations) &&
+			attributes.citations.length > 0;
+		const hasHeading =
 			typeof attributes.headingText === 'string' &&
-			attributes.headingText.trim().length > 0
-		);
+			attributes.headingText.trim().length > 0;
+		return !hasCitations || hasHeading;
 	}
 
 	if (checkName === 'raw_url_link_text') {
